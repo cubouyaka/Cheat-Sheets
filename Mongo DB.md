@@ -320,7 +320,29 @@ db.products.aggregate([
 ```
 
 8.  Write a query to find the number of products in each category with at least one review.
-    
+```mongosh
+db.products.aggregate([
+  {
+    $lookup: {
+      from: "reviews",
+      localField: "_id",
+      foreignField: "productId",
+      as: "reviews"
+    }
+  },
+  {
+    $match: {
+      "reviews.0": { $exists: true } // check if the reviews array is not empty
+    }
+  },
+  {
+    $group: {
+      _id: "$category",
+      count: { $sum: 1 }
+    }
+  }
+])
+```
 
 9.  Write a query to find the top 5 most reviewed products.
     
