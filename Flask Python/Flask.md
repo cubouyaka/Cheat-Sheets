@@ -6,6 +6,7 @@ pip install flask-restful
 ```
 
 # Basics
+
 ## Imports
 ```python 
 from flask import Flask
@@ -76,21 +77,99 @@ def about():
 To see this page, visit the URL `http://localhost:5000/about`.
 
 6.  Write a Flask route that takes in a user's name as a URL parameter and returns a greeting that includes their name.
+```python
+@app.route('/greeting/<name>')
+def greet_user(name):
+    return f'Hello, {name}!'
+```
+To try it, visit the URL `http://localhost:5000/greeting/Victor` 
 
 7. Create a Flask application that serves a simple HTML page with a form. The form should include a text input field for a name and a submit button. When the form is submitted, the application should display a personalized greeting message that includes the name entered in the form.
-    
+```python
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/greet', methods=['POST'])
+def greet():
+    name = request.form['name']
+    return f"Hello {name}! Welcome to my Flask app."
+```
+
+The `index.html` should be in a directory called `templates` and should look like:
+```html
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Greeting App</title>
+</head>
+<body>
+	<form action="/greet" method="POST">
+		<label for="name">Enter your name:</label>
+		<input type="text" name="name" id="name">
+		<button type="submit">Submit</button>
+	</form>
+</body>
+</html>
+```
+
 8. Write a Flask route that takes in a list of numbers as a URL parameter and returns the sum of those numbers.
+```python
+@app.route('/sum/<nums>')
+def sum(nums):
+    num_list = nums.split(',')
+    num_sum = 0
+    for num in num_list:
+        num_sum += int(num)
+    return f"The sum of {nums} is {num_sum}."
+```
 
 9. Create a Flask application that serves a page with a button. When the button is clicked, the application should make an AJAX call to a separate Flask route that returns a JSON object with a random quote and author.
-    
+```python
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/random_quote')
+def random_quote():
+    response = requests.get('https://api.quotable.io/random')
+    quote = response.json()['content']
+    author = response.json()['author']
+    return jsonify({'quote': quote, 'author': author})
+```
+
+The `index.html` file should look something like this:
+```html
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Random Quote App</title>
+</head>
+<body>
+	<button onclick="getQuote()">Get a random quote</button>
+
+	<script>
+		function getQuote() {
+			fetch('/random_quote')
+				.then(response => response.json())
+				.then(data => {
+					alert(`${data.quote}\n- ${data.author}`);
+				});
+		}
+	</script>
+</body>
+</html>
+```
+
 10.  Write a Flask route that takes in a username and password as form data and returns a JSON object with a success message if the credentials are correct, and an error message otherwise.
+```python
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.form['username']
+    password = request.form['password']
     
-11.  Create a Flask application that serves a page with a button. When the button is clicked, the application should stream a live video feed from the user's webcam.
-    
-12.  Write a Flask route that serves a JSON object with information about the current weather in a specified location.
-    
-13.  Create a Flask application that serves a page with a list of items. The user should be able to add new items to the list using a form, and the application should use a database to store the items.
-    
-14.  Write a Flask route that takes in a CSV file and returns a JSON object with the file's contents.
-    
-15.  Create a Flask application that serves a page with a form that allows the user to upload a file. The application should store the file in a folder on the server and display a message indicating whether the upload was successful.
+    if username == 'myusername' and password == 'mypassword':
+        return jsonify({'success': True, 'message': 'Login successful.'})
+    else:
+        return jsonify({'success': False,
+```

@@ -1,18 +1,18 @@
-from flask import Flask
-from flask_restful import Resource, Api
+from flask import Flask, request, render_template
+
+app = Flask(__name__)
 
 
-class Video(Resource):
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-    def get(self):
-        return "GET"
 
+@app.route('/greet', methods=['POST'])
+def greet():
+    name = request.form['name']
+    return f"Hello {name}! Welcome to my Flask app."
 
-app = Flask("VideoAPI")
-api = Api(app)
-api.add_resource(Video, '/')
 
 if __name__ == '__main__':
     app.run()
-
-# Write a Flask route that takes in a user's name as a URL parameter and returns a greeting that includes their name.
