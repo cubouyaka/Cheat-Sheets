@@ -149,43 +149,58 @@ db.users.find({$expr: {$gt: ["$money", "$debt"]}})
 
 ##### Update all `users` that have `age` equal  to `23` to an age equal to `24`:
 ```mongosh
-db.users.updateOne({age: 12}, {$set: {age: 13}})
+db.users.updateOne(
+	{age: 12}, 
+	{$set: {age: 13}})
 ```
 Which is the same as incrementing the `age` by `1`:
 ```mongosh
-db.users.updateOne({age: 12}, {$inc: {age: 1}})
+db.users.updateOne(
+	{age: 12}, 
+	{$inc: {age: 1}})
 ```
 
 ##### Unset properly a value
 ```mongosh
-db.users.updateOne({_id: ObjectId("6411ff792acf93a4a8994221")}, {$unset: {age: ""}})
+db.users.updateOne(
+	{_id: ObjectId("6411ff792acf93a4a8994221")},
+	{$unset: {age: ""}})
 ```
 
 ##### Add a new value in `hobbies`
 ```mongosh
-db.users.updateOne({_id: ObjectId("6411ff792acf93a4a8994221")}, {$push: {hobbies: "Swimming"}})
+db.users.updateOne(
+	{_id: ObjectId("6411ff792acf93a4a8994221")}, 
+	{$push: {hobbies: "Swimming"}})
 ```
+
 ##### To add a list of value
 ```mongosh
-db.users.updateOne({_id: ObjectId("6411ff792acf93a4a8994221")}, {$push: {hobbies: "Swimming"}})
+db.users.updateOne(
+	{_id: ObjectId("6411ff792acf93a4a8994221")},
+	{$push: {hobbies: {$each: ["Swimming", "Running", "Walking"]}}})
 ```
 
 ##### Remove a value 
 ```mongosh
-db.users.updateOne({_id: ObjectId("6411ff792acf93a4a8994221")}, {$pull: {hobbies: "Running"}})
+db.users.updateOne(
+	{_id: ObjectId("6411ff792acf93a4a8994221")}, 
+	{$pull: {hobbies: "Running"}})
 ```
 ## Update Many
 
-Remove all the addresses (so when the adress exists):
+Remove all the `debts` (when the `debt` exists):
 ```mongosh
-db.users.updateMany({address: {$exists: true}}, {$unset: {address: ""}})
+db.users.updateMany(
+	{debt: {$exists: true}}, 
+	{$unset: {debt: ""}})
 ```
 # Delete
 
 ## DeleteOne
 
 ```mongosh
-db.users.deleteOne({name: "John"})
+db.users.deleteOne({name: "Luce"})
 ```
 
 ## DeleteMany
@@ -195,4 +210,10 @@ Delete all `users` that don't have an age:
 db.users.deleteMany({age: {$exists: false}})
 ```
 
+## Delete All
+
+To delete all `users` we can use `deleteMany` with an empty filter `{}`:
+```mongosh
+db.users.deleteMany({})
+```
 
