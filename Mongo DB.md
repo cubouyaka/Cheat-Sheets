@@ -164,7 +164,7 @@ db_name.users.updateOne({_id: ObjectId("13424646758458")}, {$push: {hobbies: "Sw
 ```
 ##### Remove a value 
 ```mongosh
-db_name.users.updateOne({_id: ObjectId("13424646758458")}, {$pull: {hobbies: "Running"}})
+db_name.users.updateOne({_id: ObjectId("1342466758458")}, {$pull: {hobbies: "Running"}})
 ```
 ## Update Many
 
@@ -186,3 +186,5 @@ Delete all `users` that don't have an age:
 ```mongosh
 db_name.users.deleteMany({age: {$exists: false}})
 ```
+
+
