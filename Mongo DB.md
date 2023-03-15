@@ -16,6 +16,11 @@ Use a database: put us inside `db_name` db and creates it if it doesn't exists a
 use db_name
 ```
 
+Create a collection `users` in the db:
+```mongosh
+db_name.createCollection("users")
+```
+
 Then to see our collections inside the db we are using:
 ```mongosh
 show collections
@@ -23,7 +28,7 @@ show collections
 
 To see everything that is in the collection (ie without any conditions):
 ```mongosh 
-db_name.collection_name.find()
+db_name.users.find()
 ```
 
 To delete the `db_name` database:
