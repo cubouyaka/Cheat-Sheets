@@ -258,7 +258,7 @@ Assume you have a database named "store" with a collection named "products". Eac
 
 ## Solution
 
-0. Let's create the database `store` and the collection `products`:
+0. Create the database `store` and the collection `products`:
 ```mongosh
 use store
 db.createCollection("products")
@@ -323,16 +323,8 @@ db.products.aggregate([
 ```mongosh
 db.products.aggregate([
   {
-    $lookup: {
-      from: "reviews",
-      localField: "_id",
-      foreignField: "productId",
-      as: "reviews"
-    }
-  },
-  {
     $match: {
-      "reviews.0": { $exists: true } // check if the reviews array is not empty
+      reviews: { $ne: [] }
     }
   },
   {
@@ -344,7 +336,39 @@ db.products.aggregate([
 ])
 ```
 
-9.  Write a query to find the top 5 most reviewed products.
-    
+9.  Write a query to find the top 3 most reviewed products.
+```mongosh
+db.products.aggregate([
+  {
+    $project: {
+      name: 1,
+      reviewsCount: { $size: "$reviews" }
+    }
+  },
+  {
+    $sort: { reviewsCount: -1 }
+  },
+  {
+    $limit: 3
+  }
+])
+```
 
-10.  Write a query to find all products where the sum of the length of all review comments is greater than 50.
+This query uses the `$project` stage to create a new field called `reviewsCount` that contains the number of reviews for each product. It then sorts the products by the `reviewsCount` field in descending order using the `$sort` stage. Finally, it limits the output to the top 3 products using the `$limit` stage.
+
+The result will be a list of documents that contain the name of the product and the number of reviews it has, sorted in descending order by the number of reviews, with only the top 3 products.
+
+10.  Write a query to find all products where the sum of the length of all review comments is greater than 10.
+```mongosh
+db.products.find({
+  $where: function() {
+    var sum = 0;
+    this.reviews.forEach(function(review) {
+      sum += review.comment.length;
+    });
+    return sum > 10;
+  }
+})
+```
+
+This query uses the `$where` operator to execute a JavaScript function for each document in the `products` collection. The function iterates over the `reviews` array of each document, summing the length of all review comments. If the sum is greater than 50, the function returns `true`, indicating that the document should be included in the result set.
