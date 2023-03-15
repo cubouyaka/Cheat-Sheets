@@ -261,29 +261,68 @@ Assume you have a database named "store" with a collection named "products". Eac
 0. Let's create the database `store` and the collection `products`:
 ```mongosh
 use store
-
+db.createCollection("products")
 ```
 
-Before starting let's create a collection `orders` inside a database `db` :
+1.  Insert three products into the collection:
 ```mongosh
-use db
-db.createCollection("orders")
+db.products.insertMany([
+	{name: "Product A", price: 10, category: "Category 1", stock: 20, reviews: []},
+	{name: "Product B", price: 15, category: "Category 1", stock: 10, reviews: [{username: "User 1", comment: "Good product"}]},
+	{name: "Product C", price: 20, category: "Category 2", stock: 5, reviews: [{username: "User 2", comment: "Great product"}, {username: "User 3", comment: "Not worth the price"}]}])
 ```
 
-Then let's add some orders to it:
+And let's verify everything was added correctly:
 ```mongosh
-{
-  "customer_id": 1,
-  "order_date": ISODate("..."),
-  "items": [
-    {
-      "product_id": ObjectId("..."),
-      "quantity": NumberInt("..."),
-      "price": NumberDecimal("...")
-    },
-    ...
-  ]
-}
+db.products.find()
 ```
 
-1. 
+2.  Write a query to find all products in "Category 1" with a price greater than 12:
+```mongosh
+db.products.find({category: "Category 1", price: {$gt: 12}})
+```
+
+3.  Write a query to update the stock of "Product A" to 30.
+```mongosh
+db.products.updateOne( {name: "Product A"}, {$set: {stock: 30}})
+```
+
+4.  Write a query to add a new review to "Product B" with username "User 2" and comment "Average product".
+```mongosh
+db.products.updateOne(
+	{name: "Product B"},
+	{$push: {reviews: {username: "User 2", comment: "Average Product"}}})
+```
+
+5.  Write a query to remove the review with username "User 3" from "Product C".
+```mongosh
+db.products.updateOne(
+	{name: "Product C"},
+	{$pull: {reviews: {username: "User 3"}}}
+)
+```
+
+6.  Write a query to find the average price of products in each category.
+``` mongosh
+db.products.aggregate([
+  {
+    $group: {
+      _id: "$category",
+      avgPrice: { $avg: "$price" }}}])
+```
+
+7.  Write a query to find the products with the highest and lowest stock levels.
+```mongosh
+db.products.aggregate([
+  { $sort: { stock: 1 } }, // sort by stock in ascending order
+  { $limit: 1 }, // return the document with the lowest stock
+], { collation: { locale: "en_US", numericOrdering: true } })
+```
+
+8.  Write a query to find the number of products in each category with at least one review.
+    
+
+9.  Write a query to find the top 5 most reviewed products.
+    
+
+10.  Write a query to find all products where the sum of the length of all review comments is greater than 50.
